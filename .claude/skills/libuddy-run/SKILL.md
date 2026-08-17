@@ -153,7 +153,9 @@ For each `status: new` record, oldest first:
 ## Phase 5 — Present proposal queue (interactive)
 
 1. Print a numbered table of every open item: name, classification, confidence,
-   one-line rationale, proposed action, template (if any).
+   one-line rationale, proposed action, template (if any). **Always render the
+   name as a clickable markdown link to the profile URL** — same in the Phase 7
+   summary — so Frank can review any profile manually before deciding.
 2. For each item, get an explicit decision via AskUserQuestion (batch related
    items into one call where sensible, up to 4 questions per call):
    - **Approve** — execute the proposed action.
