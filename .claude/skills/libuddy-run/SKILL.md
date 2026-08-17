@@ -125,6 +125,11 @@ For each `status: new` record, oldest first:
    - `vendor.txt` / `recruiter.txt` ONLY when the invitation **note itself**
      clearly makes the sales pitch or recruitment approach. Frank never sends a
      rebuf to someone who hasn't actually pitched anything yet.
+   - **Language follows the note.** A Dutch invite note gets the Dutch variant
+     (`vendor_dutch.txt` / `recruiter_dutch.txt`); an English (or other) note
+     gets the English one. For no-note invites, language comes from
+     `config.dutch_signals` (this already selected between the two
+     `linkedin_assistant` variants).
    - Invite **without a note** (or with a note that doesn't clarify intent) →
      always the AI-assistant ask-intent template, regardless of how vendor-ish
      the profile looks: `linkedin_assistant.txt` (English) or
