@@ -7,7 +7,7 @@
     "accept": false,
     "decline_stale": false
   },
-  "dry_run": false,
+  "dry_run": true,
   "followup_window_days": 30,
   "max_actions_per_run": 10,
   "min_seconds_between_actions": 20,

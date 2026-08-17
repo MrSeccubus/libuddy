@@ -66,6 +66,9 @@ strip query string and trailing junk, keep trailing slash):
    (normalized), the invitation note if present (and note explicitly when there
    is NO note — that matters in Phase 6), and how long ago it was sent.
    Scroll/paginate until the list is exhausted.
+   **Always expand a note's "show more" and capture the FULL text** — a
+   vendor/recruiter rebuf may only ever be proposed on the strength of the
+   complete note, never on a truncated opener plus a job title.
 3. Diff against state:
    - URL not in state → add a record with `first_seen: today`, `status: new`.
    - URL in state with a terminal `final_outcome` but appearing again as a fresh
@@ -102,7 +105,21 @@ For each `status: new` record, oldest first:
 4. Confidence downgrade rule: low confidence on `vendor`/`recruiter`/`accept` →
    reclassify as the appropriate `unclear_*` (asking intent is the safe
    default). If even that feels wrong → `classification: manual`.
-5. Set `status: proposed`. Persist all classifications to `state/requests.json`
+5. **Template selection — the invite note decides, not the profile:**
+   - `vendor.txt` / `recruiter.txt` ONLY when the invitation **note itself**
+     clearly makes the sales pitch or recruitment approach. Frank never sends a
+     rebuf to someone who hasn't actually pitched anything yet.
+   - Invite **without a note** (or with a note that doesn't clarify intent) →
+     always the AI-assistant ask-intent template, regardless of how vendor-ish
+     the profile looks: `linkedin_assistant.txt` (English) or
+     `linkedin_assistant_dutch.txt` (Dutch per `config.dutch_signals`). The
+     classification label (vendor/recruiter/unclear) is still recorded — it
+     drives stats and `auto_mode` — but the message asks for their reason.
+   - `linkedin.txt` / `linkedin_dutch.txt` are Frank's personal versions; the
+     agent sends the `_assistant` variants, which identify the sender as
+     Frank's AI assistant.
+   Record the chosen template in the record as `proposed_template`.
+6. Set `status: proposed`. Persist all classifications to `state/requests.json`
    now (classification is not a LinkedIn state change, so this is always safe).
 
 ## Phase 4 — Follow-up sweep
