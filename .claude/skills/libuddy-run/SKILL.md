@@ -76,6 +76,22 @@ strip query string and trailing junk, keep trailing slash):
      for the user; never re-message (CLAUDE.md rule 1).
    - URL in state and still pending → no change.
 
+## Phase 1b — Backfill pre-libuddy replies (read-only, first runs)
+
+Frank replied to some pending invites manually before libuddy existed. For
+pending invites NOT yet in state (prioritize the oldest), click the card's
+"Message" / "Reply to <name>" link on the invitation manager — the compose
+overlay that opens shows the full existing message history with that person
+(empty box = no history). If the thread contains a prior reply from Frank:
+backfill the record as
+`status: replied`, `action_taken: sent_template`, `template_used: "manual"`,
+`action_date` = the date of Frank's message (visible in the thread),
+`followup_deadline` = that date + `config.followup_window_days`, and capture
+`thread_url`. These records then flow through Phases 2 and 4 normally.
+Frank's manual replies end with a bare `YYYYMMDD` date stamp (e.g. `20260223`);
+libuddy's templates end with "(This reply was sent on YYYY-MM-DD.)" — recognize
+both when dating a reply.
+
 ## Phase 2 — Check replies (read-only)
 
 For each record with `status: replied` and `reply_received: false`:
