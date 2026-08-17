@@ -203,9 +203,17 @@ For each approved item:
      still mis-targets, mark the item `manual` and stop.
   4. Screenshot BEFORE clicking Send, send, screenshot AFTER and verify the
      message (with its date line) appears in the thread.
-  4. Capture the messaging `thread_url`. Update the record: `status: replied`,
+  5. Capture the messaging `thread_url`. Update the record: `status: replied`,
      `action_taken: sent_template`, `action_date: today`, `template_used`,
      `thread_url`, `followup_deadline: today + config.followup_window_days`.
+  6. **Rebufs also decline the invite.** A vendor/recruiter rebuf is a
+     definitive no — immediately after the verified send, click Ignore on the
+     invitation (screenshot-verify it left the pending list) and set
+     `status: declined`, `final_outcome: rebuffed_declined`,
+     `followup_deadline: null`. The 30-day window (invite stays pending,
+     Phase 4 sweeps it) is ONLY for ask-intent messages
+     (`linkedin_assistant*`), where a good answer may still lead to an
+     accept. Send+decline is one queue item and counts as one action.
 - **Accept**: click Accept on the invitation, screenshot-verify it left the
   pending list. Update: `status: accepted`, `action_taken: accepted`,
   `action_date`, `final_outcome: accepted`.
