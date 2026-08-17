@@ -40,5 +40,7 @@ template, accepts, or declines. Templates come from https://github.com/MrSeccubu
    navigation.
 6. **No credentials anywhere in this repo.** Browser access uses Frank's live
    Chrome session via the extension only.
-7. `state/requests.json` contains third-party personal data — this repo must
-   stay private.
+7. `state/requests.json` and `state/log.md` contain third-party personal data.
+   The GitHub repo is PUBLIC, so these files are gitignored and must NEVER be
+   committed or pushed. Before any push, verify `git ls-files state/` shows
+   only `state/README.md`.

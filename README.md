@@ -10,8 +10,9 @@ declined.
 It drives my real, logged-in Chrome via the **Claude in Chrome** extension — no
 stored credentials, no unofficial APIs, human-paced.
 
-> **Keep this repo private.** `state/requests.json` contains third-party
-> personal data (names, headlines, reply summaries).
+> **Privacy note:** this public repo contains code only. `state/requests.json`
+> and `state/log.md` hold third-party personal data and are gitignored —
+> they live exclusively on the machine that runs libuddy.
 
 ## Requirements
 
