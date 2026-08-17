@@ -183,8 +183,16 @@ For each approved item:
      the invite was sent without a note, LinkedIn offers no reply option** — do
      not improvise; ask the user whether to decline the invite instead or mark
      it `manual`.
-  3. Paste the message, screenshot BEFORE clicking Send, send, screenshot AFTER
-     and verify the message (with its date line) appears in the thread.
+  3. **Target the right compose box.** Multiple message overlays can be open at
+     once, and "first contenteditable in the DOM" may belong to a DIFFERENT
+     person's window. Before inserting text: close every other message overlay,
+     then locate the compose box strictly INSIDE the overlay whose header shows
+     the intended recipient's name. After inserting, screenshot and verify BOTH
+     that the text is in the box AND that the overlay header names the intended
+     recipient. Wrong window → clear the box, close overlays, retry once; if it
+     still mis-targets, mark the item `manual` and stop.
+  4. Screenshot BEFORE clicking Send, send, screenshot AFTER and verify the
+     message (with its date line) appears in the thread.
   4. Capture the messaging `thread_url`. Update the record: `status: replied`,
      `action_taken: sent_template`, `action_date: today`, `template_used`,
      `thread_url`, `followup_deadline: today + config.followup_window_days`.
