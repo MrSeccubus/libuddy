@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.fbreedijk.libuddy</string>
+
+    <!-- Read-only scan + classify, then notify. If the headless Chrome bridge
+         proves unreliable, replace the first command with just the osascript
+         notification (a bare "time to run libuddy" reminder). -->
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/zsh</string>
+        <string>-lc</string>
+        <string>cd ~/repos/libuddy &amp;&amp; claude -p "/libuddy-run scan-only" --permission-mode acceptEdits > state/last-scan.txt 2>&amp;1; osascript -e "display notification \"Scan finished — run /libuddy-run to review proposals\" with title \"libuddy\""</string>
+    </array>
+
+    <!-- Monday and Thursday at 09:30 -->
+    <key>StartCalendarInterval</key>
+    <array>
+        <dict>
+            <key>Weekday</key><integer>1</integer>
+            <key>Hour</key><integer>9</integer>
+            <key>Minute</key><integer>30</integer>
+        </dict>
+        <dict>
+            <key>Weekday</key><integer>4</integer>
+            <key>Hour</key><integer>9</integer>
+            <key>Minute</key><integer>30</integer>
+        </dict>
+    </array>
+
+    <key>RunAtLoad</key>
+    <false/>
+</dict>
+</plist>
