@@ -185,7 +185,12 @@ For each approved item:
      it `manual`.
   3. **Target the right compose box.** Multiple message overlays can be open at
      once, and "first contenteditable in the DOM" may belong to a DIFFERENT
-     person's window. Before inserting text: close every other message overlay,
+     person's window. Note: clicking "Reply to <name>" may navigate to the full
+     /messaging/ page instead of an overlay; there the entire messaging UI
+     (including the compose box and the "<name> requested to connect" header)
+     lives INSIDE the `linkedin.com/preload/` iframe — search that iframe's
+     contentDocument, not the top document. The compose URL's `recipient=` URN
+     must match the one captured for this person during the Phase 1 scan. Before inserting text: close every other message overlay,
      then locate the compose box strictly INSIDE the overlay whose header shows
      the intended recipient's name. After inserting, screenshot and verify BOTH
      that the text is in the box AND that the overlay header names the intended
