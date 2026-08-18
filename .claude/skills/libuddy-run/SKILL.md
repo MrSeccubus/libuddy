@@ -97,11 +97,25 @@ Then, for EVERY send-candidate (ask/rebuf/accept alike), route by thread state:
 - **Thread, last is Frank's, but NOT an ask** (a genuine conversation gone
   quiet) → **Review**, unchecked — never auto-decline a real conversation.
 - **Thread, last is Frank's ask, ≤ window old** → **Awaiting reply**, no action.
-- **Thread, last is from THEM** → **Your turn**: they replied or messaged;
-  unchecked, with the thread link so Frank answers personally.
+- **Thread, last is from THEM** → split by whether **Frank ever sent a message
+  in the thread**:
+  - **Frank participated** (he replied earlier, they answered) → **Your turn**:
+    unchecked, thread link, Frank answers personally. Never auto-message.
+  - **Inbound-only** (every message is theirs, Frank never wrote back — e.g. an
+    invite note / cold pitch that auto-created a thread) → there is NO
+    double-message risk, so classify it like a normal candidate **by the note**:
+    a clear pitch → `rebuf-*`/`recruit-*` (checked); otherwise `ask-*`. This is
+    the Dhishan Ramdas case: all messages came from them, it's a vendor pitch →
+    it should get a rebuf, NOT sit in "your turn".
+  Determining "did Frank ever send" needs the thread's messages
+  (`messengerMessages` endpoint — re-discover its queryId if it 4xx's, it was
+  400ing on 2026-08-18). If that endpoint is genuinely unavailable, fall back
+  conservatively: treat lastFromThem as "your turn" for review, but call this
+  out in the scan summary as a known gap so Frank can reclassify inbound-only
+  pitches by hand.
 This is the CLAUDE.md rule-1 guarantee (never message the same person twice) —
-any prior exchange keeps the item out of the auto-send sections. Frank can
-still override any line by changing the action word + checkbox.
+any thread where FRANK has sent keeps the item out of auto-send. Frank can
+override any line by changing the action word + checkbox.
 
 ## S4 — Classify
 
