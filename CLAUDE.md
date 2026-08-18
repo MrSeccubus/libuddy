@@ -24,11 +24,18 @@ template, accepts, or declines. Templates come from https://github.com/MrSeccubu
    normalized URL up in `state/requests.json`; if a record exists with any
    send/accept/decline already taken, only follow-up-sweep actions are allowed.
    Re-invites from previously handled people are surfaced as `manual`.
-2. **No LinkedIn state change without approval.** Unless `auto_mode[<category>]`
-   is `true` in `config.json` AND classification confidence is `high`, every
-   accept/send/decline requires an explicit per-item user approval in the
-   current session. `dry_run: true` overrides everything: never perform the
-   final state-changing click.
+2. **No LinkedIn state change without approval.** A checked line in the
+   current `state/decisions.md` (written by the latest scan, edited by Frank)
+   is the explicit per-item approval; interactive per-item approval in the
+   session is the fallback when no decisions file exists. Unchecked lines are
+   deferrals, never actions. `auto_mode[<category>]: true` + `high` confidence
+   may skip the question. `dry_run: true` overrides everything: never perform
+   the final state-changing click.
+2a. **The Voyager API is read-only.** In-browser `fetch()` to
+   `/voyager/api/...` is allowed for GET only (scanning invites, conversations,
+   profiles). Every LinkedIn state change — send, accept, ignore — goes through
+   the real UI with screenshot verification. Never POST/PUT/DELETE to voyager
+   endpoints.
 3. **Write state immediately after each executed action**, not at the end of
    the run. A crashed run must never cause a duplicate send on the next run.
 4. **Screenshot-verify every state-changing click** (before and after). If the
@@ -36,8 +43,8 @@ template, accepts, or declines. Templates come from https://github.com/MrSeccubu
    stop executing further actions, and report to the user. Never guess or retry
    blindly.
 5. **Human-paced**: at most `max_actions_per_run` state-changing actions per
-   run, at least `min_seconds_between_actions` between them, no rapid-fire
-   navigation.
+   run (`null` = no cap), at least `min_seconds_between_actions` between them,
+   no rapid-fire navigation.
 6. **No credentials anywhere in this repo.** Browser access uses Frank's live
    Chrome session via the extension only.
 7. **Never spend InMail credits.** Never compose via direct

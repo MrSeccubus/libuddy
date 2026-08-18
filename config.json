@@ -9,7 +9,7 @@
   },
   "dry_run": false,
   "followup_window_days": 30,
-  "max_actions_per_run": 10,
+  "max_actions_per_run": null,
   "min_seconds_between_actions": 3,
   "colleague_employers": ["Schuberg Philis"],
   "vip_criteria": "Well-known security researchers, CISOs of major organizations, authors/speakers Frank would recognize by name; when in doubt, classify as unclear instead of accept.",

@@ -24,15 +24,18 @@ stored credentials, no unofficial APIs, human-paced.
 
 ```
 cd ~/repos/libuddy && claude
-/libuddy-run            # full run: scan → classify → approve each item → execute
-/libuddy-run scan-only  # read-only: scan + classify + persist proposals, no actions
+/libuddy-run            # SCAN: fast Voyager read of ALL invites + replies → state/decisions.md
+# ... edit state/decisions.md in your editor: check/uncheck, change action words ...
+/libuddy-run apply      # APPLY: bulk-execute the checked decisions (verified UI clicks)
 /libuddy-status         # read-only state summary, no browser needed
 ```
 
-Run it a few times per week. Every action requires per-item approval until you
-flip `auto_mode` flags in `config.json` (Phase 2 — start with `vendor`, keep
-`accept` manual longest). `dry_run: true` in `config.json` makes a run do
-everything except the final click.
+The weekly loop: scan (a minute), edit the decisions file over coffee, apply.
+Scan reads via LinkedIn's internal Voyager API from inside your logged-in tab
+(GET only); all state-changing actions are real UI clicks with screenshot
+verification. The decisions file covers the full backlog from the first scan,
+so old invites drain in one or two editing sessions. `dry_run: true` still
+makes apply do everything except the final click.
 
 After a run, commit: `git add -A && git commit -m "libuddy run $(date +%F)"` —
 every state change stays a reviewable diff.

@@ -1,4 +1,6 @@
 state/requests.json
 state/log.md
 state/last-scan.txt
+state/decisions.md
+state/voyager-endpoints.json
 .DS_Store
