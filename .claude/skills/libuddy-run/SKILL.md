@@ -69,18 +69,31 @@ Diff against state:
 - Sanity check: connection invites + event invites should equal the UI count
   ("All (N)"); if wildly off, stop and report.
 
-## S3 — Check replies
+## S3 — Message-history check (MANDATORY — prevents double-contact)
 
-Fetch the conversations list (paginate by lastActivity as needed) and, for
-records with `status: replied` and `reply_received: false`, match the
-participant URN. If the requester sent anything after our dated template:
-- `reply_received: true`, one-line `reply_summary`.
-- Capture the conversation id → `thread_url:
-  https://www.linkedin.com/messaging/thread/<id>/`.
-- If the LAST message in the thread is theirs (Frank hasn't answered), the
-  decisions file lists it under "Replies received — awaiting YOUR answer"
-  with the thread link so Frank can reply directly. Default action `manual`,
-  unchecked — this section is never auto-executed.
+Fetch the FULL conversations list (paginate via
+`metadata.nextCursor`, recipe in `state/voyager-endpoints.json`) and build a
+map of every profile Frank already has a thread with:
+`ACoAA-id → thread-id`. **Match invites to threads on the MiniProfile `ACoAA`
+entityUrn, NOT the numeric objectUrn** (they differ; using the wrong one
+silently matches nothing).
+
+Then, for EVERY send-candidate (ask/rebuf/accept alike):
+- **If a thread already exists → do NOT auto-message.** Route the item to the
+  decisions file's **"Review first — you already have a message thread"**
+  section, unchecked, with `thread_url:
+  https://www.linkedin.com/messaging/thread/<id>/`. This is the CLAUDE.md
+  rule-1 guarantee (never message the same person twice) — a pre-libuddy manual
+  reply, an InMail, any prior exchange all count. Frank opens the thread to
+  reply himself, or explicitly changes the action + checks the box to send anyway.
+- If no thread exists → the candidate is safe for its send section.
+
+Per-message sender/date detection (to distinguish "Frank already replied" from
+"inbound-only") needs the `messengerMessages` endpoint, whose queryId rotates
+and was 400ing on 2026-08-18. libuddy does NOT depend on it: thread-existence
+alone is enough to protect against double-contact. If that endpoint is
+re-discovered, records where the requester's message is the latest can also be
+surfaced under "Replies received — awaiting YOUR answer" with the thread link.
 
 ## S4 — Classify
 
