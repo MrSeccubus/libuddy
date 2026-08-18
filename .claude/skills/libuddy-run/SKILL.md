@@ -197,34 +197,60 @@ Counts per section, the decisions-file path, replies awaiting Frank's answer
    invite no longer exists (quick Voyager re-fetch), record
    `invite_withdrawn` and skip it.
 
-## A1 — Execute (real UI, screenshot-verified, 3s between actions, no cap)
+## A1 — Execute (real UI, 3s+ between actions, no cap)
 
+**Hard-won mechanics (2026-08-18 run — follow these, they prevent real bugs):**
+- **JS calls have a ~45s ceiling.** Keep each browser call short: do at most a
+  few state-changing actions (or one send) per call, then verify. A batch with
+  long internal `setTimeout` waits will time out mid-way and you won't know what
+  landed — so **verify via Voyager after every batch** (a declined/accepted
+  invite disappears from the `PENDING` list; a sent message's dated footer
+  appears in the thread). Never trust a timed-out call's outcome.
+- **Virtualized list:** the invitation list only keeps ~30 cards in the DOM.
+  To reach a card, scroll `main` in small increments (≈330px) from the top,
+  checking each step — jumping to the bottom skips the middle. Accented slugs
+  are URL-encoded in hrefs (`célia` → `c%C3%A9lia`); match on the encoded form.
+- **Compose targeting (the fragile part):** open ONLY via the card's
+  "Reply to <name>" / "Message" link — **never a `/messaging/compose/` URL
+  (paid InMail, forbidden).** Then pick the compose box that is (a) a
+  `contenteditable` whose ancestor text contains the recipient's exact name AND
+  a compose marker (`requested to connect` / `New message` / `Write a message`),
+  AND (b) **actually in the viewport** (`0 < rect.y < window.innerHeight-30`,
+  `height > 15`). Off-screen/hidden duplicate boxes exist (from docked chat
+  widgets) and are the #1 cause of mis-targeting — the viewport filter is what
+  disambiguates. If the compose text mentions InMail → abort, mark `manual`.
+- **Insert** via `document.execCommand('insertText')` (never keystrokes — Enter
+  sends), then **dispatch an `input` event** on the box or the Send button
+  stays disabled. Clear the box first (`selectAll`+`delete`) to kill any stray
+  draft.
+- **Send:** click the enabled `Send` button that is in the viewport. Post-send
+  the box detaches, so a "did the dated footer appear" DOM scan is unreliable —
+  screenshot-verify periodically (recipient header + message) and rely on the
+  Voyager pending-count drop / message presence for the rest.
+- **Between sends:** press Escape (or click the overlay's header ✕) to close the
+  overlay, so overlays/boxes don't stack. Docked minimized chat bubbles have no
+  clean close and cause both duplicate boxes and a "Leave site? unsaved changes"
+  dialog on reload — if they pile up, clear all draft boxes then reload the page
+  (re-inject the Voyager csrf/token, templates, and helpers afterward).
+- **Renderer freezes** after long sessions; a page reload clears the state and
+  restores responsiveness.
+
+Per approved item:
 - **Send template** (`rebuf-*`, `recruit-*`, `ask-*`):
   1. Render template with today's ISO date for `{{DATE}}`.
-  2. Open the compose ONLY via the invitation card's "Reply to <name>" /
-     "Message" link on the invitation manager — **never a direct
-     /messaging/compose/ URL (routes as paid InMail — forbidden, CLAUDE.md).**
-     If the compose UI mentions InMail credits → abort item, mark `manual`.
-  3. Target the compose box with **subtree scoping**: find the smallest
-     visible container holding BOTH "New message" (or the thread header) AND
-     the recipient's name, then the single `contenteditable` INSIDE it.
-     Multiple overlays may be open — close others first (Escape closes the
-     active overlay). If "Reply to" navigated to the full /messaging/ page,
-     the entire UI lives inside the `linkedin.com/preload/` iframe — search
-     its contentDocument. Insert via `document.execCommand('insertText')` —
-     never keystroke typing (Enter may send). Verify by screenshot: text in
-     the box AND the recipient's name in the header. Wrong target → clear
-     ALL boxes, retry once, else `manual` + stop the queue.
-  4. Screenshot before Send → click Send → verify the message with its date
-     line appears in the thread. Capture `thread_url`.
-  5. Update record: `status: replied`, `action_taken: sent_template`,
-     `template_used`, `action_date`, `thread_url`,
+  2. Scroll-find the card, open its Reply/Message link, insert per the mechanics
+     above, verify recipient name in the overlay, Send, dispatch input if Send
+     is disabled.
+  3. Update record: `status: replied`, `action_taken: sent_template`,
+     `template_used`, `action_date`, `thread_url` (if captured),
      `followup_deadline: today + config.followup_window_days`.
-  6. **Rebufs (`rebuf-*`/`recruit-*`) also decline the invite immediately**:
-     click Ignore, verify the card shows "Invitation ignored." →
-     `status: declined`, `final_outcome: rebuffed_declined`,
+  4. **Rebufs (`rebuf-*`/`recruit-*`) also decline the invite immediately**:
+     click Ignore, verify the card left pending (Voyager or "Invitation
+     ignored.") → `status: declined`, `final_outcome: rebuffed_declined`,
      `followup_deadline: null`. Send+decline = one item. (Never click the
      "I don't know <name>" link — that reports the sender.)
+  Wrong-recipient or InMail detected at any point → clear ALL boxes, mark the
+  item `manual`, and stop the queue.
 - **Accept**: click Accept on the card, verify it left pending →
   `status: accepted`, `final_outcome: accepted`.
 - **Decline**: click Ignore, verify → `status: declined`,
