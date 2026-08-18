@@ -40,7 +40,13 @@ template, accepts, or declines. Templates come from https://github.com/MrSeccubu
    navigation.
 6. **No credentials anywhere in this repo.** Browser access uses Frank's live
    Chrome session via the extension only.
-7. `state/requests.json` and `state/log.md` contain third-party personal data.
+7. **Never spend InMail credits.** Never compose via direct
+   `/messaging/compose/` URLs or any interface that mentions InMail credits —
+   those route as paid InMail. Messages to invite senders are free ONLY via
+   the invitation card's "Reply to <name>" / "Message" links on the
+   invitation manager. If the only available compose path mentions InMail,
+   stop and mark the item `manual`.
+8. `state/requests.json` and `state/log.md` contain third-party personal data.
    The GitHub repo is PUBLIC, so these files are gitignored and must NEVER be
    committed or pushed. Before any push, verify `git ls-files state/` shows
    only `state/README.md`.

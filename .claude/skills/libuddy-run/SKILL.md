@@ -184,10 +184,14 @@ For each approved item:
 - **Send template** (vendor/recruiter/unclear):
   1. Render the template from `templates/<name>.txt`, replacing `{{DATE}}` with
      today's ISO date.
-  2. On the invitation, use the Reply/Message affordance for the invite. **If
-     the invite was sent without a note, LinkedIn offers no reply option** — do
-     not improvise; ask the user whether to decline the invite instead or mark
-     it `manual`.
+  2. On the invitation, use the Reply/Message affordance for the invite —
+     **ONLY the invitation card's "Reply to <name>" / "Message" link, never a
+     direct `/messaging/compose/` URL**: direct compose routes as paid InMail
+     and spending InMail credits is forbidden (CLAUDE.md rule 7). If the
+     compose interface that opens mentions InMail credits, abort the send and
+     mark the item `manual`. **If the invite was sent without a note, LinkedIn
+     offers no reply option** — do not improvise; ask the user whether to
+     decline the invite instead or mark it `manual`.
   3. **Target the right compose box.** Multiple message overlays can be open at
      once, and "first contenteditable in the DOM" may belong to a DIFFERENT
      person's window. Note: clicking "Reply to <name>" may navigate to the full
