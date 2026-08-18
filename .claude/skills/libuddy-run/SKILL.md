@@ -78,22 +78,30 @@ map of every profile Frank already has a thread with:
 entityUrn, NOT the numeric objectUrn** (they differ; using the wrong one
 silently matches nothing).
 
-Then, for EVERY send-candidate (ask/rebuf/accept alike):
-- **If a thread already exists → do NOT auto-message.** Route the item to the
-  decisions file's **"Review first — you already have a message thread"**
-  section, unchecked, with `thread_url:
-  https://www.linkedin.com/messaging/thread/<id>/`. This is the CLAUDE.md
-  rule-1 guarantee (never message the same person twice) — a pre-libuddy manual
-  reply, an InMail, any prior exchange all count. Frank opens the thread to
-  reply himself, or explicitly changes the action + checks the box to send anyway.
-- If no thread exists → the candidate is safe for its send section.
+The conversations list includes each thread's **last message** (its `*sender`
+and `deliveredAt`). Capture, per thread: `lastFromMe` (does `*sender` contain
+Frank's own ACoAA id), `ageDays`, and `isAsk` = does the last message body
+match an ask/rebuf signature. **Ask signatures** (Frank's own outgoing asks):
+"Frank's AI assistant", "elaborate on the purpose of your invitation", "in my
+efforts to get to most out of LinkedIn", "Could you tell us the purpose",
+the Dutch equivalents, the "(This reply was sent on …)" / "(Dit antwoord …)"
+footers, AND a bare `YYYYMMDD` stamp (Frank's manual asks end with one, e.g.
+`20260706`). No per-message endpoint needed — the last message is enough
+(the `messengerMessages` endpoint was 400ing on 2026-08-18 anyway).
 
-Per-message sender/date detection (to distinguish "Frank already replied" from
-"inbound-only") needs the `messengerMessages` endpoint, whose queryId rotates
-and was 400ing on 2026-08-18. libuddy does NOT depend on it: thread-existence
-alone is enough to protect against double-contact. If that endpoint is
-re-discovered, records where the requester's message is the latest can also be
-surfaced under "Replies received — awaiting YOUR answer" with the thread link.
+Then, for EVERY send-candidate (ask/rebuf/accept alike), route by thread state:
+- **No thread** → safe; keep in its send section.
+- **Thread, last is Frank's ASK, >`followup_window_days` old** → this is a dead
+  follow-up: recommend **decline** (checked), with the thread link. (e.g. an
+  ask sent 42 days ago, no reply.)
+- **Thread, last is Frank's, but NOT an ask** (a genuine conversation gone
+  quiet) → **Review**, unchecked — never auto-decline a real conversation.
+- **Thread, last is Frank's ask, ≤ window old** → **Awaiting reply**, no action.
+- **Thread, last is from THEM** → **Your turn**: they replied or messaged;
+  unchecked, with the thread link so Frank answers personally.
+This is the CLAUDE.md rule-1 guarantee (never message the same person twice) —
+any prior exchange keeps the item out of the auto-send sections. Frank can
+still override any line by changing the action word + checkbox.
 
 ## S4 — Classify
 
