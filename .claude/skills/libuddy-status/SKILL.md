@@ -7,6 +7,11 @@ description: Read-only summary of libuddy state - pending proposals, requests aw
 
 Read-only. Do not open Chrome, do not touch LinkedIn, do not modify any file.
 
+Fastest path: run **`bin/libuddy.py status`** — it prints status counts,
+awaiting-reply deadlines (with days left / overdue flags), replies-received
+("your turn"), open proposals by classification, and the recent log. Relay and
+enrich its output. The manual steps below are the fallback / detail spec.
+
 1. Read `config.json` and `state/requests.json`. If the state file is missing or
    `{}`, say so and stop.
 2. Print, using today's date:

@@ -193,11 +193,12 @@ Counts per section, the decisions-file path, replies awaiting Frank's answer
 
 ## A0 — Parse and re-verify
 
-1. Read `state/decisions.md`. Checked lines = approved
-   (`[approved via decisions.md]` in the log); unchecked = defer; `skip` =
-   `status: manual`, `final_outcome: rejected_by_user`.
-2. Per item, safety gate BEFORE acting: look up the URL in state — any prior
-   send/accept/decline → refuse and mark `manual` (never message twice).
+1. `bin/libuddy.py plan` parses `state/decisions.md` → JSON with `execute` /
+   `deferred` / `skipped` lists. It already applies the never-twice safety gate
+   (drops anything with a prior `sent_template`/`accepted`/`declined` in state
+   into `deferred`) and maps each action word to its template. Work the
+   `execute` list; unchecked lines and `skip` are handled for you.
+2. (The safety gate is in `plan`, but still re-check per item before a send.)
 3. Freshness: if the decisions file predates the newest scan, or an item's
    invite no longer exists (quick Voyager re-fetch), record
    `invite_withdrawn` and skip it.
@@ -261,11 +262,21 @@ Per approved item:
 - **Decline**: click Ignore, verify → `status: declined`,
   `final_outcome: declined_no_reply` (stale) .
 
-After EVERY action (and every failure): write `state/requests.json`
-immediately, append one line to `state/log.md`
-(`YYYY-MM-DD HH:MM SENT <template> to <name> (<url>) [approved via decisions.md]`).
-Any verification mismatch → mark item `manual`, STOP the remaining queue,
-report.
+After EVERY verified action (and every failure): record it with the bookkeeping
+CLI — do NOT hand-write JSON. One call writes `state/requests.json` and appends
+to `state/log.md` crash-safely:
+
+    bin/libuddy.py record <profile-url> <sent|declined|accepted|rebuffed|manual|skip> \
+        [--template <file>] [--thread <url>] [--name "Full Name"] [--date YYYY-MM-DD] [--reason "…"]
+
+  - ask-intent send → `sent --template linkedin_assistant[_dutch].txt` (sets
+    `replied` + a fresh `followup_deadline`).
+  - rebuf send+decline → `rebuffed --template vendor.txt` (sets `declined` +
+    `rebuffed_declined`). Then do the Ignore click in the UI.
+  - stale/other decline → `declined`; accept → `accepted`; skip → `skip`;
+    park for Frank → `manual`.
+  `record` warns if the person already has a prior `sent_template` (double-message
+  guard). Any verification mismatch → `record … manual`, STOP the queue, report.
 
 ## A2 — Apply summary
 

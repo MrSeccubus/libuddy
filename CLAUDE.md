@@ -14,6 +14,10 @@ template, accepts, or declines. Templates come from https://github.com/MrSeccubu
 - `state/requests.json` — single source of truth, an object keyed by normalized
   profile URL. Schema documented in `.claude/skills/libuddy-run/SKILL.md`.
 - `state/log.md` — append-only human-readable action log.
+- `bin/libuddy.py` — local-only state bookkeeping CLI (`record` / `plan` /
+  `status` / `sets`). Deterministic file ops on `state/*`; never touches Chrome
+  or LinkedIn. Allow-listed in `.claude/settings.json`. Skills call it instead
+  of hand-writing JSON.
 - `.claude/skills/libuddy-run/SKILL.md` — the main workflow (`/libuddy-run`).
 - `.claude/skills/libuddy-status/SKILL.md` — read-only state summary (`/libuddy-status`).
 - `launchd/com.fbreedijk.libuddy.plist` — optional scheduled scan-and-notify nudge.

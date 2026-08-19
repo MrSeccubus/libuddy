@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 bin/libuddy.py:*)",
+      "Bash(./bin/libuddy.py:*)"
+    ]
+  }
+}
