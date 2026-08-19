@@ -109,10 +109,15 @@ Then, for EVERY send-candidate (ask/rebuf/accept alike), route by thread state:
     it should get a rebuf, NOT sit in "your turn".
   Determining "did Frank ever send" needs the thread's messages
   (`messengerMessages` endpoint — re-discover its queryId if it 4xx's, it was
-  400ing on 2026-08-18). If that endpoint is genuinely unavailable, fall back
-  conservatively: treat lastFromThem as "your turn" for review, but call this
-  out in the scan summary as a known gap so Frank can reclassify inbound-only
-  pitches by hand.
+  400ing on 2026-08-18/19). **If that endpoint is unavailable you CANNOT prove
+  a thread is inbound-only, so you must NOT auto-send to anyone with an existing
+  thread whose last message is theirs** — even a clear pitch. Frank may have
+  already replied and the pitch you see is their follow-up (the Tom Soper /
+  watchTowr case, 2026-08-19: last msg was his, libuddy never asked him, so the
+  scan wrongly queued a rebuf — but Frank had already answered). Route ALL such
+  `lastFromThem` items to **"They messaged you — your turn"** with the thread
+  link, unchecked. Reserve the inbound-only → rebuf/ask path for when the
+  messages endpoint positively confirms Frank never sent in that thread.
 This is the CLAUDE.md rule-1 guarantee (never message the same person twice) —
 any thread where FRANK has sent keeps the item out of auto-send. Frank can
 override any line by changing the action word + checkbox.
